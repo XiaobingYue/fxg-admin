@@ -290,14 +290,24 @@
                 })
             },
             submitSort(index, row){
-                this.axios.post('goods/updateSort', { id: row.id,sort:row.sort_order }).then((response) => {})
+                this.axios.get('/auth/admin/goods/updateSort', {
+                    params:{
+                        id: row.id,
+                        sort:row.sort
+                    }
+                }).then((response) => {
+                    this.$message({
+                        type: 'success',
+                        message: '修改成功'
+                    });
+                })
             },
             handleClick(tab, event) {
                 let pindex = tab._data.index;
 				this.page = 1;
                 this.activeClass = 0;
                 if (pindex == 0) {
-                    this.getList();
+                    this.getAllList();
                     this.pIndex = 0;
                 }
                 else if (pindex == 1) {
@@ -374,94 +384,100 @@
                 });
             },
             onSubmitFilter() {
-                this.page = 1;
-                this.getList();
+                const params = {
+                    params: {
+                        pageNo: 1,
+                        pageSize: this.size,
+                        name: this.filterForm.name,
+                        type: this.pIndex + 1
+                    }
+                }
+                this.getList(params);
             },
             clear(){
-                this.axios.get('goods', {
+                this.filterForm.name = ''
+                const params = {
                     params: {
-                        page: this.page,
-                        name: ''
+                        pageNo: 1,
+                        pageSize: this.size,
+                        type: this.pIndex + 1
                     }
-                }).then((response) => {
-                    this.tableData = response.data.data.data
-                    this.page = response.data.data.currentPage
-                    this.total = response.data.data.count
-                })
+                }
+                this.getList(params);
             },
-            getList() {
-                this.axios.get('/auth/admin/goods/list', {
-                    params: {
-                        pageNo: this.page,
-						pageSize: this.size,
-                        name: this.filterForm.name
-                    }
-                }).then((response) => {
+            getList(params) {
+                this.axios.get('/auth/admin/goods/list', params).then((response) => {
                     this.tableData = response.data.records
                     this.page = response.data.current
                     this.total = response.data.total
                 })
             },
-            getOnSaleList() {
-                this.axios.get('goods/onsale', {
+            getAllList() {
+                const params ={
                     params: {
-                        page: this.page,
-						size: this.size
+                    pageNo: this.page,
+                    pageSize: this.size,
+                    name: this.filterForm.name
                     }
-                }).then((response) => {
-                    this.tableData = response.data.data.data
-                    this.page = response.data.data.currentPage
-                    this.total = response.data.data.count
-                })
+                }
+                this.getList(params);
+            },
+            getOnSaleList() {
+                const params ={
+                    params: {
+                        pageNo: this.page,
+                        pageSize: this.size,
+                        name: this.filterForm.name,
+                        type: 2
+                    }
+                }
+                this.getList(params);
             },
             getOutList() {
-                this.axios.get('goods/out', {
+                const params ={
                     params: {
-                        page: this.page,
-						size: this.size
+                        pageNo: this.page,
+                        pageSize: this.size,
+                        name: this.filterForm.name,
+                        type: 3
                     }
-                }).then((response) => {
-                    this.tableData = response.data.data.data;
-                    this.page = response.data.data.currentPage;
-                    this.total = response.data.data.count;
-                })
+                }
+                this.getList(params);
             },
             getDropList() {
-                this.axios.get('goods/drop', {
+                const params ={
                     params: {
-                        page: this.page,
-						size: this.size
+                        pageNo: this.page,
+                        pageSize: this.size,
+                        name: this.filterForm.name,
+                        type: 4
                     }
-                }).then((response) => {
-                    this.tableData = response.data.data.data;
-                    this.page = response.data.data.currentPage;
-                    this.total = response.data.data.count;
-                })
+                }
+                this.getList(params);
             },
             sortOrder(num) {
-                this.num = num;
-                this.pIndex = 4;
-                this.activeClass = num;
-                this.axios.get('goods/sort', {
+                const params ={
                     params: {
-                        page: this.page,
-						size: this.size,
-                        index: num
+                        pageNo: this.page,
+                        pageSize: this.size,
+                        name: this.filterForm.name,
+                        type: this.pIndex+1,
+                        sortType: num+1
                     }
-                }).then((response) => {
-                    this.tableData = response.data.data.data;
-                    this.page = response.data.data.currentPage;
-                    this.total = response.data.data.count;
-                })
+                }
+                this.getList(params);
             },
             changeStatus($event, para) {
-                this.axios.get('goods/saleStatus', {
+                this.axios.get('auth/admin/goods/saleStatus', {
                     params: {
                         status: $event,
                         id: para
                     }
                 }).then((response) => {
-
+                    this.$message({
+                        type: 'success',
+                        message: '修改成功'
+                    });
                 })
             },
             changeProductStatus($event, para) {
