@@ -66,7 +66,7 @@
                         this.loading = false;
                         if (res.code === 200) {
                             console.log(res.data);
-                            localStorage.setItem('token', res.data);
+                            sessionStorage.setItem('token', res.data);
                             // localStorage.setItem('userInfo', JSON.stringify(res.data.data.userInfo));
                             console.log(JSON.stringify(res.data))
                             // console.log(JSON.stringify(res.data.data.userInfo))

@@ -8,6 +8,20 @@ axios.defaults.timeout = 10000;
 // post请求头
 axios.defaults.headers.post['Content-Type'] = 'application/json;charset=utf-8';
 
+// request interceptor
+axios.interceptors.request.use(
+    config => {
+      //config.headers['content-type'] = 'application/json; charset=utf-8'
+      // config.headers.dataType = 'json'
+      if (sessionStorage.getItem('token')) {
+        //  存在将api_token写入 request header
+        config.headers.Authorization = `Bearer ${sessionStorage.getItem('token')}`
+      }
+      return config
+    }
+)
+
+
 axios.interceptors.response.use(success => {
   console.log(success)
   // 后端有全局异常捕获，后端异常前端接到仍是200，错误信息错误码在data中
@@ -23,7 +37,8 @@ axios.interceptors.response.use(success => {
     Message.error({message: '权限不足，请联系管理员'})
   } else if (error.response.status == 401) {
     Message.error({message: '尚未登录，请登录'})
-    router.replace('/');
+    // router.replace('/login');
+    router.push({name: 'login'});
   } else {
     if (error.response.data.desc) {
       Message.error({message: error.response.data.desc})
